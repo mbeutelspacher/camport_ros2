@@ -35,7 +35,7 @@ void PercipioCameraNodeDriver::init() {
     RCLCPP_INFO_STREAM(logger_, "Init lib");
     TYInitLib();
 
-    TYImageProcesAcceEnable(false);
+    TYImageProcesAcceEnable(true);
 
     //camport sdk version
     TY_VERSION_INFO ver;
