@@ -246,8 +246,6 @@ void PercipioCameraNode::setupDevices() {
 
     if(stream_enable[DEPTH_STREAM])
         f_depth_scale = device_ptr->getDepthValueScale();
-
-    startStreams();
 }
 
 void PercipioCameraNode::startStreams() {
@@ -362,6 +360,7 @@ void PercipioCameraNode::setupTopics() {
   setupPublishers();
   setupSubscribers();
   setupServices();
+  startStreams();
 }
 
 StreamSubscriptions PercipioCameraNode::activeSubscriptions() {
