@@ -1118,13 +1118,10 @@ void PercipioDevice::frameDataReceive() {
     fps_counter.reset();
     while (rclcpp::ok() && is_running_.load()) {
         TY_FRAME_DATA frame;
-        if(workmode == CONTINUOUS || workmode == HARDTRIGGER) {
-            status = TYFetchFrame(handle, &frame, 2000);
-        } else if(workmode == SOFTTRIGGER) {
-            status = TYFetchFrame(handle, &frame, 200);
+        if(workmode == SOFTTRIGGER) {
+            status = TYFetchFrame(handle, &frame, 100);
         } else {
-            RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOG_HEAD_PERCIPIO_DEVICE), "Invalid workmode: " << workmode);
-            status = TYFetchFrame(handle, &frame, 2000);
+            status = TYFetchFrame(handle, &frame, 100);
         }
 
         if(status == TY_STATUS_OK) {

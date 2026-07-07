@@ -241,6 +241,7 @@ class PercipioDevice
         bool stream_close(const percipio_stream_index_pair& idx);
         bool stream_start();
         bool stream_stop();
+        bool is_streaming() const { return is_running_.load(); }
         void send_softtrigger();
 
         void setFrameCallback(FrameCallbackFunction callback);

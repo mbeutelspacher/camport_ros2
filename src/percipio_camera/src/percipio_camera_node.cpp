@@ -326,11 +326,42 @@ void PercipioCameraNode::setupPublishers() {
     device_event_publisher_ = node_->create_publisher<std_msgs::msg::String>("device_event", rclcpp::QoS(1).transient_local());
 }
 
+void PercipioCameraNode::setupServices() {
+    set_streaming_srv_ = node_->create_service<std_srvs::srv::SetBool>(
+        "set_streaming",
+        std::bind(&PercipioCameraNode::srv_set_streaming_callback, this,
+                  std::placeholders::_1, std::placeholders::_2));
+}
+
+void PercipioCameraNode::srv_set_streaming_callback(
+    const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+    std::shared_ptr<std_srvs::srv::SetBool::Response> response)
+{
+    if (request->data) {
+        if (device_ptr->is_streaming()) {
+            response->success = true;
+            response->message = "already streaming";
+            return;
+        }
+        response->success = device_ptr->stream_start();
+        response->message = response->success ? "started" : "failed to start";
+    } else {
+        if (!device_ptr->is_streaming()) {
+            response->success = true;
+            response->message = "already stopped";
+            return;
+        }
+        response->success = device_ptr->stream_stop();
+        response->message = response->success ? "stopped" : "failed to stop";
+    }
+}
+
 void PercipioCameraNode::setupTopics() {
   getParameters();
   setupDevices();
   setupPublishers();
   setupSubscribers();
+  setupServices();
 }
 
 StreamSubscriptions PercipioCameraNode::activeSubscriptions() {

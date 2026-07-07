@@ -17,6 +17,7 @@
 #include <sensor_msgs/point_cloud2_iterator.hpp>
 #include <std_msgs/msg/string.hpp>
 #include <std_msgs/msg/empty.hpp>
+#include <std_srvs/srv/set_bool.hpp>
 
 #include <image_publisher/image_publisher.hpp>
 #include <image_transport/publisher.hpp>
@@ -43,6 +44,7 @@ class PercipioCameraNode {
         void setupDevices();
         void setupPublishers();
         void setupSubscribers();
+        void setupServices();
         void setupTopics();
 
         void SendOfflineMsg(const char* sn);
@@ -91,6 +93,11 @@ class PercipioCameraNode {
 
         void topic_device_reset_callback(const std_msgs::msg::Empty::SharedPtr msg) const;
         rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr device_reset_event_subscriber_;
+
+        void srv_set_streaming_callback(
+            const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+            std::shared_ptr<std_srvs::srv::SetBool::Response> response);
+        rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr set_streaming_srv_;
         
         rclcpp::TimerBase::SharedPtr timer_ = nullptr;
         void broadcast_timer_callback();
