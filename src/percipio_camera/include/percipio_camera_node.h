@@ -53,6 +53,10 @@ class PercipioCameraNode {
 
         rclcpp::Node* Node() { return node_; }
         std::shared_ptr<PercipioDevice>  Device() const { return device_ptr; }
+
+        // Which stream outputs currently have at least one subscriber. Called from
+        // the device receive thread to gate per-frame processing work.
+        StreamSubscriptions activeSubscriptions();
         
     private:
         rclcpp::Node* node_ = nullptr;

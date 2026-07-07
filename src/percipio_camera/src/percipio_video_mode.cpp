@@ -503,57 +503,56 @@ void VideoStream::reset()
     _p3d.release();
 }
 
-bool VideoStream::DepthInit(const TYImage& depth, image_intrinsic& intr, const uint64_t& timestamp)
+bool VideoStream::DepthInit(TYImage depth, image_intrinsic& intr, const uint64_t& timestamp)
 {
     if(depth.empty()) {
         return false;
     }
 
-    _depth = depth.clone();
     _depth_timestamp = timestamp;
     _depth_cam_info = convertToCameraInfo(intr.resize(depth.width(), depth.height()).data(), depth.width(), depth.height());
+    _depth = std::move(depth);
 
-    
     return true;
 }
 
-bool VideoStream::ColorInit(const TYImage& color, image_intrinsic& intr, const uint64_t& timestamp)
+bool VideoStream::ColorInit(TYImage color, image_intrinsic& intr, const uint64_t& timestamp)
 {
     if(color.empty()) {
         return false;
     }
 
-    _color = color.clone();
     _color_timestamp = timestamp;
     _color_cam_info = convertToCameraInfo(intr.resize(color.width(), color.height()).data(), color.width(), color.height());
+    _color = std::move(color);
     return true;
 }
 
-bool VideoStream::IRLeftInit(const TYImage& ir, image_intrinsic& intr, const uint64_t& timestamp)
+bool VideoStream::IRLeftInit(TYImage ir, image_intrinsic& intr, const uint64_t& timestamp)
 {
     if(ir.empty()) {
         return false;
     }
 
-    _left_ir = ir.clone();
     _lir_timestamp = timestamp;
     _lir_cam_info = convertToCameraInfo(intr.resize(ir.width(), ir.height()).data(), ir.width(), ir.height());
+    _left_ir = std::move(ir);
     return true;
 }
 
-bool VideoStream::IRRightInit(const TYImage& ir, image_intrinsic& intr, const uint64_t& timestamp)
+bool VideoStream::IRRightInit(TYImage ir, image_intrinsic& intr, const uint64_t& timestamp)
 {
     if(ir.empty()) {
         return false;
     }
 
-    _right_ir = ir.clone();
     _rir_timestamp = timestamp;
     _rir_cam_info = convertToCameraInfo(intr.resize(ir.width(), ir.height()).data(), ir.width(), ir.height());
+    _right_ir = std::move(ir);
     return true;
 }
 
-bool VideoStream::PointCloudInit(const TYImage& p3d, image_intrinsic& intr, const uint64_t& timestamp)
+bool VideoStream::PointCloudInit(TYImage p3d, image_intrinsic& intr, const uint64_t& timestamp)
 {
     if(p3d.empty()) {
         return false;
@@ -563,10 +562,10 @@ bool VideoStream::PointCloudInit(const TYImage& p3d, image_intrinsic& intr, cons
         RCLCPP_ERROR_STREAM(rclcpp::get_logger("VideoStream"), "Invalid p3d data type!");
         return false;
     }
-    
-    _p3d = p3d.clone();
+
     _p3d_timestamp = timestamp;
     _p3d_cam_info = convertToCameraInfo(intr.resize(p3d.width(), p3d.height()).data(), p3d.width(), p3d.height());
+    _p3d = std::move(p3d);
     return true;
 }
 

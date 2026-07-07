@@ -97,6 +97,19 @@ typedef std::pair<percipio_stream_type, int> percipio_stream_index_pair;
 typedef boost::function<void(VideoStream&)> FrameCallbackFunction;
 typedef boost::function<void(PercipioDevice*, TY_EVENT_INFO*)> PercipioDeviceEventCallbackFunction;
 
+// Live "does anyone actually want this output right now" snapshot, queried once
+// per frame so the receive thread can skip decode/undistort/remap/copy work for
+// streams with no subscribers.
+struct StreamSubscriptions
+{
+    bool depth = false;
+    bool color = false;
+    bool left_ir = false;
+    bool right_ir = false;
+    bool point_cloud = false;
+    bool color_point_cloud = false;
+};
+
 
 struct percipio_stream_property
 {
@@ -251,7 +264,7 @@ class PercipioDevice
         TY_EVENT_INFO device_ros_event;
 
     private:
-        PercipioCameraNode* _node;
+        PercipioCameraNode* _node = nullptr;
 
         GigEVersion  gige_version = GigeE_2_0;
 
@@ -343,7 +356,7 @@ class PercipioDevice
         void colorStreamReceive(const TYImage& color, uint64_t& timestamp);
         void leftIRStreamReceive(TYImage& ir,   uint64_t& timestamp);
         void rightIRStreamReceive(TYImage& ir,  uint64_t& timestamp);
-        void depthStreamReceive(TYImage& depth, uint64_t& timestamp);
+        void depthStreamReceive(TYImage& depth, uint64_t& timestamp, bool publish_depth_image, bool feed_point_cloud);
         void p3dStreamReceive(const TYImage& depth,   uint64_t& timestamp);
 };
 }

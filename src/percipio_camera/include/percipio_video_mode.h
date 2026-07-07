@@ -74,11 +74,13 @@ class VideoStream {
         ~VideoStream() {}
 
         void reset();
-        bool DepthInit(const TYImage& depth, image_intrinsic& intr, const uint64_t& timestamp);
-        bool ColorInit(const TYImage& color, image_intrinsic& intr, const uint64_t& timestamp);
-        bool IRLeftInit(const TYImage& ir, image_intrinsic& intr, const uint64_t& timestamp);
-        bool IRRightInit(const TYImage& ir, image_intrinsic& intr, const uint64_t& timestamp);
-        bool PointCloudInit(const TYImage& p3d, image_intrinsic& intr, const uint64_t& timestamp);
+        // Images are taken by value so callers can std::move a dying temporary in
+        // (zero-copy); an lvalue argument copies exactly once, as the old clone did.
+        bool DepthInit(TYImage depth, image_intrinsic& intr, const uint64_t& timestamp);
+        bool ColorInit(TYImage color, image_intrinsic& intr, const uint64_t& timestamp);
+        bool IRLeftInit(TYImage ir, image_intrinsic& intr, const uint64_t& timestamp);
+        bool IRRightInit(TYImage ir, image_intrinsic& intr, const uint64_t& timestamp);
+        bool PointCloudInit(TYImage p3d, image_intrinsic& intr, const uint64_t& timestamp);
 
                 
         //////////////////////////////////////////////

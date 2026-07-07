@@ -333,6 +333,25 @@ void PercipioCameraNode::setupTopics() {
   setupSubscribers();
 }
 
+StreamSubscriptions PercipioCameraNode::activeSubscriptions() {
+    StreamSubscriptions subs;
+
+    auto image_has_subscriber = [this](const percipio_stream_index_pair& idx) -> bool {
+        auto it = image_publishers_.find(idx);
+        return it != image_publishers_.end() && it->second.getNumSubscribers() > 0;
+    };
+
+    subs.depth    = image_has_subscriber(DEPTH_STREAM);
+    subs.color    = image_has_subscriber(COLOR_STREAM);
+    subs.left_ir  = image_has_subscriber(LEFT_IR_STREAM);
+    subs.right_ir = image_has_subscriber(RIGHT_IR_STREAM);
+
+    subs.point_cloud       = point_cloud_pub_       && point_cloud_pub_->get_subscription_count() > 0;
+    subs.color_point_cloud = color_point_cloud_pub_ && color_point_cloud_pub_->get_subscription_count() > 0;
+
+    return subs;
+}
+
 void PercipioCameraNode::SendOfflineMsg(const char* sn) {
     auto msg = std_msgs::msg::String();
     msg.data = " DeviceOffline<" + std::string(sn) + ">";
